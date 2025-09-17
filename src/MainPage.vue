@@ -9,7 +9,7 @@ defineProps<{ msg: string }>()
 <template>
   <div class="page">
     <DraggableImage
-      src="/image/bird1.png"
+      src="@/assets/image/bird1.png"
       :initial-x="100"
       :initial-y="100"
       :initial-scale="1"
@@ -18,7 +18,7 @@ defineProps<{ msg: string }>()
       :max-scale="3"
     />
     <DraggableImage
-      src="/image/bird2.png"
+      src="@/assets/image/bird2.png"
       :initial-x="100"
       :initial-y="100"
       :initial-scale="1"
@@ -31,8 +31,8 @@ defineProps<{ msg: string }>()
         <div class="slider-container">
           <div class="slider">
             <div class="slide"> <LineChart /></div>
-            <div class="slide"><img :src="`/image/img1.png`" /></div>
-            <div class="slide"><img :src="`/image/img2.png`" /></div>
+            <div class="slide"><img src="@/assets/image/img1.png" /></div>
+            <div class="slide"><img src="@/assets/image/img2.png" /></div>
           </div>
         </div>
       </div>
