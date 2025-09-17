@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import LineChart from './components/RealTimeLineChart.vue';
 import DraggableImage from './components/DraggableImage.vue'
+import Animal1 from "@/assets/image/bird1.png";
+import Animal2 from "@/assets/image/bird2.png";
+import Picture1 from "@/assets/image/img1.png";
+import Picture2 from "@/assets/image/img2.png";
 
 defineProps<{ msg: string }>()
 
@@ -9,7 +13,7 @@ defineProps<{ msg: string }>()
 <template>
   <div class="page">
     <DraggableImage
-      src="@/assets/image/bird1.png"
+      :src="Animal1"
       :initial-x="100"
       :initial-y="100"
       :initial-scale="1"
@@ -18,7 +22,7 @@ defineProps<{ msg: string }>()
       :max-scale="3"
     />
     <DraggableImage
-      src="@/assets/image/bird2.png"
+      :src="Animal2"
       :initial-x="100"
       :initial-y="100"
       :initial-scale="1"
@@ -31,8 +35,8 @@ defineProps<{ msg: string }>()
         <div class="slider-container">
           <div class="slider">
             <div class="slide"> <LineChart /></div>
-            <div class="slide"><img src="@/assets/image/img1.png" /></div>
-            <div class="slide"><img src="@/assets/image/img2.png" /></div>
+            <div class="slide"><img :src="Picture1" /></div>
+            <div class="slide"><img :src="Picture2" /></div>
           </div>
         </div>
       </div>
