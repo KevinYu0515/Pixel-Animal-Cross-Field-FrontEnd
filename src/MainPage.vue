@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import LineChart from './components/RealTimeLineChart.vue';
 import DraggableImage from './components/DraggableImage.vue'
 import Animal1 from "@/assets/image/bird1.png";
@@ -6,23 +7,113 @@ import Animal2 from "@/assets/image/bird2.png";
 import Picture1 from "@/assets/image/img1.png";
 import Picture2 from "@/assets/image/img2.png";
 
-defineProps<{ msg: string }>()
+interface DraggableItem {
+  image: string
+  name: string
+  showImage: boolean
+}
 
+function getFileName(path: string) {
+  const parts = path.split('/')
+  const file = parts[parts.length - 1]
+  return file.split('.')[0]
+}
+
+defineProps<{ msg: string }>()
+const showToolbar = ref(false)
+
+const draggableImage = reactive<DraggableItem[]>([{
+  image: Animal1,
+  name: getFileName(Animal1),
+  showImage: true
+},{
+  image: Animal2,
+  name: getFileName(Animal2),
+  showImage: true
+}])
+let mouseNearTop = false
+let mouseInToolbar = false
+
+const onMouseMove = (e: MouseEvent) => {
+  mouseNearTop = e.clientY < 50;
+  updateToolbarVisibility()
+}
+
+const onToolbarEnter = () => {
+  mouseInToolbar = true
+  updateToolbarVisibility()
+}
+
+const onToolbarLeave = () => {
+  mouseInToolbar = false
+  updateToolbarVisibility()
+}
+
+const updateToolbarVisibility = () => {
+  showToolbar.value = mouseNearTop || mouseInToolbar
+}
+
+const handleUpload = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  if (!target.files) return
+
+  Array.from(target.files).forEach(file => {
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      draggableImage.push({
+        image: event.target?.result as string,
+        name: file.name,
+        showImage: true
+      })
+    }
+    reader.readAsDataURL(file)
+  })
+  target.value = ''
+}
+
+const removeImage = (index: number) => {
+  draggableImage.splice(index, 1)
+}
+
+onMounted(() => {
+  window.addEventListener('mousemove', onMouseMove)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('mousemove', onMouseMove)
+})
 </script>
 
 <template>
   <div class="page">
+     <div
+      class="toolbar"
+      :class="{ visible: showToolbar }"
+      @mouseenter="onToolbarEnter"
+      @mouseleave="onToolbarLeave"
+    >
+      <div class="toolbar-items">
+        <label 
+          v-for="(item, index) in draggableImage" 
+          :key="index" 
+          class="toolbar-item"
+        >
+          <input type="checkbox" v-model="item.showImage" />
+          <span>{{ item.name }} 圖片</span>
+          <button class="remove-btn" @click="removeImage(index)">x</button>
+        </label>
+      </div>
+      
+      <div class="upload-container">
+        <input type="file" multiple accept="image/*" @change="handleUpload" />
+      </div>
+    </div>
     <DraggableImage
-      :src="Animal1"
-      :initial-x="100"
-      :initial-y="100"
-      :initial-scale="1"
-      :initial-rotation="0"
-      :min-scale="0.1"
-      :max-scale="3"
-    />
-    <DraggableImage
-      :src="Animal2"
+      v-for="(item, index) in draggableImage"
+      :key="index"
+      :title="item.name"
+      v-show="item.showImage"
+      :src="item.image"
       :initial-x="100"
       :initial-y="100"
       :initial-scale="1"
@@ -290,5 +381,70 @@ defineProps<{ msg: string }>()
   66%  { transform: translateX(-66.666%); }
   96%  { transform: translateX(-66.666%); }
   100% { transform: translateX(0); }
+}
+
+.toolbar {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  min-width: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  padding: 10px 15px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.toolbar.visible {
+  opacity: 1;
+}
+
+.toolbar-items {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.toolbar-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(230, 222, 222);
+  color: rgb(24, 8, 8);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.toolbar-item input[type="checkbox"] {
+  accent-color: #00bfff;
+}
+
+.remove-btn {
+  background: #ff4d4f;
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 0 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-btn:hover {
+  background: #ff7875;
+}
+
+.upload-container input[type="file"] {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px 8px;
+  background: rgba(230, 222, 222);
+  color: rgb(24, 8, 8);
 }
 </style>
