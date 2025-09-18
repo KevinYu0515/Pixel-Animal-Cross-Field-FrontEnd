@@ -27,7 +27,7 @@ const env = {
     maxPoints: 10
   },
   "prod": {
-    timeInterval: 1000 * 60 * 5,
+    timeInterval: 1000,
     maxPoints: 10
   }
 }
