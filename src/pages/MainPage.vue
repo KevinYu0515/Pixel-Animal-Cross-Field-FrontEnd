@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import LineChart from './components/RealTimeLineChart.vue';
-import DraggableImage from './components/DraggableImage.vue'
+import LineChart from '@/components/RealTimeLineChart.vue';
+import DraggableImage from '@/components/DraggableImage.vue'
 import Animal1 from "@/assets/image/bird1.png";
 import Animal2 from "@/assets/image/bird2.png";
 import Picture1 from "@/assets/image/img1.png";
 import Picture2 from "@/assets/image/img2.png";
+import { loadData } from "@/api/data";
 
 interface DraggableItem {
   image: string
@@ -14,13 +15,13 @@ interface DraggableItem {
 }
 
 function getFileName(path: string) {
-  const parts = path.split('/')
-  const file = parts[parts.length - 1]
-  return file.split('.')[0]
+  const parts = path.split('/');
+  const file = parts[parts.length - 1];
+  return file.split('.')[0];
 }
 
-defineProps<{ msg: string }>()
-const showToolbar = ref(false)
+const showToolbar = ref(false);
+const data = ref<ChartCoordiate[]>([]);
 
 const draggableImage = reactive<DraggableItem[]>([{
   image: Animal1,
@@ -76,7 +77,10 @@ const removeImage = (index: number) => {
 }
 
 onMounted(() => {
-  window.addEventListener('mousemove', onMouseMove)
+  window.addEventListener('mousemove', onMouseMove);
+  loadData().then((result: ChartCoordiate[]) => {
+    data.value = result;
+  });
 })
 
 onUnmounted(() => {
@@ -125,7 +129,7 @@ onUnmounted(() => {
       <div class="left-container">
         <div class="slider-container">
           <div class="slider">
-            <div class="slide"> <LineChart /></div>
+            <div class="slide"> <LineChart :data="data" /></div>
             <div class="slide"><img :src="Picture1" /></div>
             <div class="slide"><img :src="Picture2" /></div>
           </div>

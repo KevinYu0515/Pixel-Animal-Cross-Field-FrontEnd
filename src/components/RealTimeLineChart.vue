@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import {
   Chart as ChartJS,
   Title,
@@ -12,7 +12,8 @@ import {
 import streamingPlugin from 'chartjs-plugin-streaming'
 import 'chartjs-adapter-date-fns'
 import { Line } from 'vue-chartjs'
-import { reactive } from 'vue'
+import type { Chart, ChartOptions } from 'chart.js';
+import { toRef } from 'vue';
 
 ChartJS.register(
   Title, Tooltip, Legend,
@@ -20,6 +21,9 @@ ChartJS.register(
   PointElement, TimeScale,
   streamingPlugin, 
 )
+
+const props = defineProps<{ data: ChartCoordiate[] }>();
+const data = toRef(props, 'data'); 
 
 const env = {
   "dev": {
@@ -39,13 +43,15 @@ const chartData = {
   datasets: [
     {
       label: 'Usage',
-      data: [...Array.from({ length: maxPoints - 1}, (_, i) => ({
+      data: process.env.NODE_ENV === 'production' ? [...data.value] : [
+        ...Array.from({ length: maxPoints - 1 }, (_, i) => ({
         x: Date.now() - timeInterval * (maxPoints - i),
         y: Math.floor(Math.random() * 100)
       })),{
           x: Date.now(),
           y: Math.floor(Math.random() * 100)
-        }],
+        }
+      ],
       borderColor: '#42a5f5',
       borderWidth: 2,
       backgroundColor: 'rgba(66,165,245,0.2)',
@@ -59,7 +65,7 @@ const chartData = {
   ]
 }
 
-const chartOptions = {
+const chartOptions: ChartOptions<'line'> = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -74,8 +80,7 @@ const chartOptions = {
             refresh: timeInterval,
             delay: timeInterval,
             pause: false,
-            onRefresh: (chart) => {
-                // 新增新的數據點
+            onRefresh: (chart: Chart) => {  
                 chart.data.datasets[0].data.push({
                     x: Date.now(),
                     y: Math.floor(Math.random() * 100)
@@ -92,7 +97,7 @@ const chartOptions = {
       min: 0,
       max: 100,
       ticks: {
-        callback: (value) => value + '%'
+        callback: (value: string | number) => (Number(value) + '%')
       },
       title: { display: true, text: '百分比' }
     }
