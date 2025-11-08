@@ -35,7 +35,7 @@ const chartData = ref({
       label: props.label || '比例 (%)',
       borderColor: '#42a5f5',
       backgroundColor: 'rgba(66,165,245,0.2)',
-      data: props.data || generateExampleData(),
+      data: props.data.length === 0 ? generateExampleData() : props.data,
       tension: 0.3,
       fill: true,
       borderWidth: 2,
