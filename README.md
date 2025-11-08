@@ -5,4 +5,6 @@ This template should help get you started developing with Vue 3 and TypeScript i
 Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
 
 # TODO
-- [] Upgrade Chart.jsv4.5.1 to use [animation](https://www.chartjs.org/docs/latest/samples/animations/progressive-line.html) on chart 
+- [ ] Upgrade Chart.jsv4.5.1 to use [animation](https://www.chartjs.org/docs/latest/samples/animations/progressive-line.html) on chart
+
+- [Backend Example](https://drive.google.com/drive/folders/1RpoQ9AYWSJ_xQ9h-2aWKQiqayij6l-wA)
