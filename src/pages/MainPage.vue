@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import LineChart from '@/components/RealTimeLineChart.vue';
+// import ReaTimeLineChart from '@/components/RealTimeLineChart.vue';
+import LineChart from '@/components/LineChart.vue';
 import DraggableImage from '@/components/DraggableImage.vue'
 import Animal1 from "@/assets/image/bird1.png";
 import Animal2 from "@/assets/image/bird2.png";
 import Picture1 from "@/assets/image/img1.png";
 import Picture2 from "@/assets/image/img2.png";
 import { loadData } from "@/api/data";
+const appEnv = import.meta.env.VITE_APP_ENV || 'dev';
 
 interface DraggableItem {
   image: string
@@ -90,7 +92,7 @@ onUnmounted(() => {
 
 <template>
   <div class="page">
-     <div
+    <div v-if="appEnv !== 'dev'"
       class="toolbar"
       :class="{ visible: showToolbar }"
       @mouseenter="onToolbarEnter"
@@ -107,7 +109,6 @@ onUnmounted(() => {
           <button class="remove-btn" @click="removeImage(index)">x</button>
         </label>
       </div>
-      
       <div class="upload-container">
         <input type="file" multiple accept="image/*" @change="handleUpload" />
       </div>
@@ -129,7 +130,7 @@ onUnmounted(() => {
       <div class="left-container">
         <div class="slider-container">
           <div class="slider">
-            <div class="slide"> <LineChart :data="data" /></div>
+            <div class="slide"> <LineChart :data="data" title="專心率 比例/時間" label="Look Forward % (專心率)" /></div>
             <div class="slide"><img :src="Picture1" /></div>
             <div class="slide"><img :src="Picture2" /></div>
           </div>
