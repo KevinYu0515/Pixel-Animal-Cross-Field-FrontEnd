@@ -82,7 +82,7 @@ onMounted(() => {
   window.addEventListener('mousemove', onMouseMove);
   loadData().then((result: ChartCoordiate[]) => {
     data.value = result;
-  });
+  })
 })
 
 onUnmounted(() => {

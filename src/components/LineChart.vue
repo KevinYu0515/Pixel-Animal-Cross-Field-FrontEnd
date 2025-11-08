@@ -47,8 +47,8 @@ const chartData = ref({
 watch(
   () => props.data,
   (newVal) => {
-    chartData.value.datasets[0].data = toRaw(newVal)
-    chartKey.value++ // 強制重新掛載以重播動畫
+    chartData.value.datasets[0].data = newVal.length > 0 ? toRaw(newVal) : generateExampleData();
+    chartKey.value++;
   },
   { immediate: true, deep: true }
 )
