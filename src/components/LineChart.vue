@@ -17,21 +17,27 @@ import {
   Legend,
   Filler,
 } from 'chart.js'
-import { easingEffects } from 'chart.js/helpers'
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import 'chartjs-adapter-date-fns'
 import { generateExampleData, densifyData } from '@/utils/geneateData'
 
 const chartKey = ref(0);
 const totalDuration = 10000;
 const delayBetweenPoints = ref(0);
-let restart = false;
+const xMaxTicks = ref(10);
 const defaultData = ref(generateExampleData());
+const maxDefaultData = ref(0);
+const minDefaultData = ref(0);
 const props = defineProps({
   data: { type: Array, default: () => [] },
   title: { type: String, default: '' },
-  label: { type: String, default: '' }
+  label: { type: String, default: '' },
+  xMaxTicks: { type: Number, default: 10 },
 })
 
+let dataIndex = { "max": [], "min": [], "pair": [] };
+let markedTop = [];
+let markedBottom = [];
 const chartData = computed(() => ({
   datasets: [
     {
@@ -40,7 +46,7 @@ const chartData = computed(() => ({
       backgroundColor: 'rgba(66,165,245,0.2)',
       data: props.data.length === 0 ? defaultData.value : props.data,
       tension: 0.3,
-      fill: true,
+      fill: { target: {value: -10} },
       borderWidth: 2,
       pointRadius: (ctx) => {
         const { x, y } = ctx.parsed;
@@ -48,27 +54,8 @@ const chartData = computed(() => ({
         return isDefault ? 4 : 0;
       },
     }
-  ]
+  ],
 }))
-
-const scales = {
-  x: {
-    type: 'time',
-    time: {
-      parser: (v) => new Date(v),
-      unit: 'second',
-      displayFormats: { second: 'HH:mm:ss', minute: 'HH:mm' }
-    },
-    ticks: { autoSkip: true, maxTicksLimit: 6 },
-    title: { display: true, text: '時間 (HH:mm:ss)' }
-  },
-  y: {
-    min: 0,
-    max: 100,
-    ticks: { stepSize: 10 },
-    title: { display: true, text: '比例 (%)' }
-  }
-}
 
 const previousY = (ctx) => {
   const firstY = ctx.chart.scales.y.getPixelForValue(ctx.dataset.data[0].y)
@@ -108,9 +95,67 @@ const chartOptions = computed(() => ({
   },
   plugins: {
     legend: { display: true, position: 'top' },
-    title: { display: true, text: props.title || '折線圖進度動畫' }
+    title: { display: true, text: props.title || '折線圖進度動畫' },
+    datalabels: {
+      align: (ctx) => {
+        const index = ctx.dataIndex;
+        if (markedTop.includes(index)) return 'top';
+        if (markedBottom.includes(index)) return 'bottom';
+        return 'top';
+      },
+      anchor: (ctx) => {
+        const index = ctx.dataIndex;
+        if (markedTop.includes(index)) return 'end';
+        if (markedBottom.includes(index)) return 'start';
+      },
+      offset: 10,
+      clamp: true,
+      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      borderColor: '#ff5722',
+      borderWidth: 1,
+      borderRadius: 6,
+      color: '#ff5722',
+      font: {
+        weight: 'bold',
+        size: 12,
+        family: 'Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif',
+      },
+      padding: { top: 4, bottom: 4, left: 8, right: 8 },
+      shadowBlur: 4,
+      shadowColor: 'rgba(0,0,0,0.2)',
+      display: (ctx) => {
+        return dataIndex.max[0] === ctx.dataIndex || dataIndex.min[0] === ctx.dataIndex || dataIndex.pair.includes(ctx.dataIndex);
+      },
+      formatter: (value, ctx) => {
+        const index = ctx.dataIndex;
+        if (dataIndex.max.includes(index)) return `最高 ${value.y}%`;
+        else if (dataIndex.min.includes(index)) return `最低 ${value.y}%`;
+        else if (dataIndex.pair.includes(index)) return `${value.y}%`;
+        return '';
+      },
+    },
   },
-  scales
+  scales: {
+    x: {
+      type: 'time',
+      time: {
+        parser: (v) => new Date(v),
+        unit: 'minute',
+        displayFormats: {  minute: 'HH:mm', hour: 'HH:mm' }
+      },
+      ticks: { autoSkip: true, maxTicksLimit: xMaxTicks.value },
+      title: { display: true, text: '時間 (HH:mm)' }
+    },
+    y: {
+      min: -10,
+      max: 100,
+      ticks: {
+        stepSize: 10,
+        callback: (value) => (value >= 0 ? value : ''),
+       },
+      title: { display: true, text: '比例 (%)' }
+    }
+  }
 }))
 
 watch(
@@ -121,12 +166,80 @@ watch(
     const newData = densifyData(defaultData.value);
     chartData.value.datasets[0].data = newData;
     delayBetweenPoints.value = totalDuration / newData.length;
+    xMaxTicks.value = props.xMaxTicks;
+
+    dataIndex = { "max": [], "min": [], "pair": [] };
+    markedTop = [];
+    markedBottom = [];
+    maxDefaultData.value = Math.max(...defaultData.value.map(d => d.y));
+    minDefaultData.value = Math.min(...defaultData.value.map(d => d.y));
+    dataIndex.max = [newData.findIndex(d => d.y === maxDefaultData.value)];
+    dataIndex.min = [newData.findIndex(d => d.y === minDefaultData.value)];
+    markedTop.push(dataIndex.max[0]);
+    markedBottom.push(dataIndex.min[0]);
+
+    let checkFlag = 0;
+    let markedPair = [];
+    for (let i = 1; i < defaultData.value.length; i++) {
+      if (defaultData.value[i].y === dataIndex.max[0] || defaultData.value[i].y === dataIndex.min[0]) continue;
+      if (!checkFlag && defaultData.value[i].y > defaultData.value[i - 1].y) {
+        markedPair.push({
+          idx: i - 1,
+          y: defaultData.value[i - 1].y
+        });
+        checkFlag ^= 1;
+      } else if (checkFlag && defaultData.value[i].y < defaultData.value[i - 1].y) {
+        markedPair.push({
+          idx: i - 1,
+          y: defaultData.value[i - 1].y
+        });
+        checkFlag ^= 1;
+      }
+    }
+    
+    function mergeClosePairs(arr, threshold = 1) {
+      const pairs = [];
+      for (let i = 0; i < arr.length; i += 2) {
+        if (i + 1 < arr.length) {
+          pairs.push([arr[i], arr[i + 1]]);
+        }
+      }
+
+      const merged = [pairs[0]];
+      for (let i = 1; i < pairs.length; i++) {
+        const prev = merged[merged.length - 1];
+        const curr = pairs[i];
+        if (curr[0].idx - prev[1].idx <= threshold) {
+          prev[1].idx = curr[1].idx;
+          prev[1].y = Math.max(prev[1].y, curr[1].y);
+          prev[0].y = Math.min(prev[0].y, curr[0].y);
+        } else {
+          merged.push(curr);
+        }
+      }
+
+      return merged.flat();
+    }
+    const merged = mergeClosePairs(markedPair, 3);
+
+    console.log('marked pairs:', markedPair);
+    console.log('merged pairs:', merged);
+    checkFlag = 0;
+    for (let p = 0, n = 0; p < merged.length && n < newData.length; n++) {
+      if (newData[n].y === merged[p].y) {
+        dataIndex.pair.push(n);
+        p++;
+        if (!checkFlag) markedBottom.push(n);
+        else markedTop.push(n);
+        checkFlag ^= 1;
+      }
+    }
     chartKey.value++;
   },
   { immediate: true, deep: true }
 )
 
-ChartJS.register(LineElement, PointElement, LinearScale, TimeScale, CategoryScale, Title, Tooltip, Legend, Filler)
+ChartJS.register(LineElement, PointElement, LinearScale, TimeScale, CategoryScale, Title, Tooltip, Legend, Filler, ChartDataLabels)
 
 </script>
 

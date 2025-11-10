@@ -1,11 +1,18 @@
-const generateExampleData = (count = 10, interval = 1000) => {
+
+const generateExampleData = (count = 100, interval = 1000) => {
     const now = Date.now();
     const data = [];
+    let current = 50;
 
     for (let i = count - 1; i >= 0; i--) {
+        const delta = (Math.random() - 0.5) * 15;
+        current += delta;
+
+        current = Math.max(10, Math.min(90, current));
+
         data.push({
             x: now - i * interval,
-            y: 40 + Math.sin(i / 2) * 30 + Math.random() * 5
+            y: Number(current.toFixed(2))
         });
     }
 

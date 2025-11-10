@@ -130,7 +130,7 @@ onUnmounted(() => {
       <div class="left-container">
         <div class="slider-container">
           <div class="slider">
-            <div class="slide"> <LineChart :data="data" title="專心率 比例/時間" label="Look Forward % (專心率)" /></div>
+            <div class="slide"> <LineChart :data="data" title="專心率 比例/時間" label="Look Forward % (專心率)" :xMaxTicks="20" /></div>
             <div class="slide"><img :src="Picture1" /></div>
             <div class="slide"><img :src="Picture2" /></div>
           </div>
