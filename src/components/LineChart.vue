@@ -108,21 +108,25 @@ const chartOptions = computed(() => ({
         if (markedTop.includes(index)) return 'end';
         if (markedBottom.includes(index)) return 'start';
       },
-      offset: 10,
-      clamp: true,
-      backgroundColor: 'rgba(255, 255, 255, 0.9)',
-      borderColor: '#ff5722',
+      offset: 8,
+      backgroundColor: 'rgba(255, 255, 255, 0.7)',
+      borderColor: 'rgba(128, 128, 128, 0.7)',
+      borderRadius: 4,
       borderWidth: 1,
-      borderRadius: 6,
-      color: '#ff5722',
-      font: {
-        weight: 'bold',
-        size: 12,
-        family: 'Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif',
+      color: (ctx) => {
+        var i = ctx.dataIndex;
+        var value = ctx.dataset.data[i];
+        var prev = ctx.dataset.data[i - 1];
+        var diff = prev !== undefined ? value.y - prev.y : 0;
+        return diff < 0 ? '#FF3C38' :
+          diff > 0 ? '#4CB963' :
+            'gray';
       },
-      padding: { top: 4, bottom: 4, left: 8, right: 8 },
-      shadowBlur: 4,
-      shadowColor: 'rgba(0,0,0,0.2)',
+      font: {
+        size: 11,
+        weight: 'bold',
+      },
+      padding: 6,
       display: (ctx) => {
         return dataIndex.max[0] === ctx.dataIndex || dataIndex.min[0] === ctx.dataIndex || dataIndex.pair.includes(ctx.dataIndex);
       },
@@ -130,7 +134,12 @@ const chartOptions = computed(() => ({
         const index = ctx.dataIndex;
         if (dataIndex.max.includes(index)) return `最高 ${value.y}%`;
         else if (dataIndex.min.includes(index)) return `最低 ${value.y}%`;
-        else if (dataIndex.pair.includes(index)) return `${value.y}%`;
+        else if (dataIndex.pair.includes(index)) {
+          var prev = ctx.dataset.data[index - 1];
+          var diff = prev !== undefined ? prev.y - value.y : 0;
+          var glyph = diff < 0 ? '▲' : diff > 0 ? '▼' : '◆';
+          return glyph + ' ' + Math.round(value.y) + '%';
+        } 
         return '';
       },
     },
@@ -157,6 +166,7 @@ const chartOptions = computed(() => ({
     }
   }
 }))
+
 
 watch(
   () => props.data,
@@ -222,8 +232,8 @@ watch(
     }
     const merged = mergeClosePairs(markedPair, 3);
 
-    console.log('marked pairs:', markedPair);
-    console.log('merged pairs:', merged);
+    // console.log('marked pairs:', markedPair);
+    // console.log('merged pairs:', merged);
     checkFlag = 0;
     for (let p = 0, n = 0; p < merged.length && n < newData.length; n++) {
       if (newData[n].y === merged[p].y) {
