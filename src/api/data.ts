@@ -1,4 +1,4 @@
-const BACKEND_API = import.meta.env.BACKEND_API || 'http://localhost:5555';
+const BACKEND_API = import.meta.env.VITE_BACKEND_API || 'http://localhost:5555';
 
 async function loadData() {
    try {
