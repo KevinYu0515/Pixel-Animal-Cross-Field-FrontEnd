@@ -189,53 +189,33 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div 
-      ref="imageRef"
-      class="draggable-image"
-      :class="{ 
+  <div ref="imageRef" class="draggable-image" :class="{ 
         dragging: isDragging, 
         resizing: isResizing, 
         rotating: isRotating 
-      }"
-      :style="{ transform: transformStyle }"
-      @mousedown="startDrag"
-      @dblclick="resetTransform"
-      @wheel="onWheel"
-    >
-      <!-- 圖片 -->
-      <img 
-        :src="props.src" 
-        alt="Draggable Image"
-        draggable="false"
-      >
-      
-      <!-- 控制手柄 -->
-      <div class="controls">
-        <!-- 縮放手柄 -->
-        <div 
-          class="control-handle scale-handle"
-          @mousedown="startScale"
-          title="拖拽縮放"
-        >
-          <img src="@/assets/scale.png" alt="縮放" />
-        </div>
-        
-        <!-- 旋轉手柄 -->
-        <div 
-          class="control-handle rotate-handle"
-          @mousedown="startRotate"
-          title="拖拽旋轉"
-        >
-          <img src="@/assets/rotate.png" alt="旋轉" />
-        </div>
+      }" :style="{ transform: transformStyle }" @mousedown="startDrag" @dblclick="resetTransform" @wheel="onWheel">
+    <!-- 圖片 -->
+    <img :src="props.src" alt="Draggable Image" draggable="false">
+
+    <!-- 控制手柄 -->
+    <div class="controls">
+      <!-- 縮放手柄 -->
+      <div class="control-handle scale-handle" @mousedown="startScale" title="拖拽縮放">
+        <img src="@/assets/image/scale.png" alt="縮放" />
       </div>
-      
-      <!-- 狀態顯示 -->
-      <div class="status-info">
-        <div>縮放: {{ scale.toFixed(2) }}</div>
-        <div>旋轉: {{ Math.round(rotation) }}°</div>
+
+      <!-- 旋轉手柄 -->
+      <div class="control-handle rotate-handle" @mousedown="startRotate" title="拖拽旋轉">
+        <img src="@/assets/image/rotate.png" alt="旋轉" />
       </div>
     </div>
+
+    <!-- 狀態顯示 -->
+    <div class="status-info">
+      <div>縮放: {{ scale.toFixed(2) }}</div>
+      <div>旋轉: {{ Math.round(rotation) }}°</div>
+    </div>
+  </div>
 </template>
 
 <style scoped>

@@ -19,20 +19,23 @@ import {
 } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import 'chartjs-adapter-date-fns'
-import { generateExampleData, densifyData } from '@/utils/geneateData'
+import { generateExampleData, hhmmToTimestamp, densifyData } from '@/utils/dataHandler'
 
 const chartKey = ref(0);
 const totalDuration = 10000;
 const delayBetweenPoints = ref(0);
 const xMaxTicks = ref(10);
-const defaultData = ref(generateExampleData());
+const defaultData = ref([]);
 const maxDefaultData = ref(0);
 const minDefaultData = ref(0);
 const props = defineProps({
   data: { type: Array, default: () => [] },
-  title: { type: String, default: '' },
-  label: { type: String, default: '' },
-  xMaxTicks: { type: Number, default: 10 },
+  info: {
+    type: Object, default: () => ({
+      title: '折線圖進度動畫',
+      label: '比例 (%)',
+      xMaxTicks: 10
+  }) },
 })
 
 let dataIndex = { "max": [], "min": [], "pair": [] };
@@ -41,7 +44,7 @@ let markedBottom = [];
 const chartData = computed(() => ({
   datasets: [
     {
-      label: props.label || '比例 (%)',
+      label: props.info.label || '比例 (%)',
       borderColor: '#42a5f5',
       backgroundColor: 'rgba(66,165,245,0.2)',
       data: props.data.length === 0 ? defaultData.value : props.data,
@@ -95,7 +98,7 @@ const chartOptions = computed(() => ({
   },
   plugins: {
     legend: { display: true, position: 'top' },
-    title: { display: true, text: props.title || '折線圖進度動畫' },
+    title: { display: true, text: props.info.title || '折線圖進度動畫' },
     datalabels: {
       align: (ctx) => {
         const index = ctx.dataIndex;
@@ -176,7 +179,7 @@ watch(
     const newData = densifyData(defaultData.value);
     chartData.value.datasets[0].data = newData;
     delayBetweenPoints.value = totalDuration / newData.length;
-    xMaxTicks.value = props.xMaxTicks;
+    xMaxTicks.value = props.info.xMaxTicks;
 
     dataIndex = { "max": [], "min": [], "pair": [] };
     markedTop = [];
