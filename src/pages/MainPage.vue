@@ -18,7 +18,7 @@ import BasicElement from '@/components/BasicElement.vue';
 import { currentTime, updateTime, clearTime, timerId } from '@/utils/time';
 import { useStickerStore } from '@/stores/stickerStore';
 
-const appEnv = import.meta.env.VITE_APP_ENV || 'dev';
+// const appEnv = import.meta.env.VITE_APP_ENV || 'dev';
 const stickerStore = useStickerStore()
 const draggableImage = computed(() => stickerStore.draggableImage);
 const showBoardBased = {
