@@ -15,8 +15,10 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "chartjs-plugin-streaming": "^2.0.0",
     "date-fns": "^4.1.0",
+    "pinia": "^3.0.4",
     "vue": "^3.5.18",
-    "vue-chartjs": "5.2.0"
+    "vue-chartjs": "5.2.0",
+    "vue-router": "^4.6.3"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",

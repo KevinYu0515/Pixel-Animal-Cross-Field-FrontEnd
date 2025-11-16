@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import MainPage from './pages/MainPage.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <MainPage msg="Vite + Vue" />
+  <RouterView />
 </template>
 
 <style>

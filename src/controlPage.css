@@ -1,0 +1,64 @@
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: linear-gradient(135deg, #f9fafb, #e0f2fe);
+    color: #0f172a;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.control-container {
+    position: absolute;
+    top: 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    margin-bottom: 10px;
+    backdrop-filter: blur(8px);
+    z-index: 20;
+    margin: 10px 20px;
+}
+
+.control-container button {
+    border: none;
+    outline: none;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: #3b82f6;
+    color: #f9fafb;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition:
+        background 0.18s ease,
+        transform 0.1s ease,
+        box-shadow 0.18s ease;
+}
+
+.control-container button:hover {
+    background: #2563eb;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+    transform: translateY(-1px);
+}
+
+.control-container button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.control-container button.secondary {
+    background: #e0f2fe;
+    color: #1d4ed8;
+}
+
+.control-container button.secondary:hover {
+    background: #bfdbfe;
+    box-shadow: 0 4px 12px rgba(148, 163, 184, 0.35);
+}
