@@ -10,4 +10,4 @@ import { title } from '@/data/mainPage';
     <div class="bottom-element"></div>
 </template>
 
-<style lang="css" scoped src="@/assets/css/basicElement.css"></style>
+<style scoped src="@/assets/css/basicElement.css"></style>

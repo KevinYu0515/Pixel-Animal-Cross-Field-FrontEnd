@@ -1,0 +1,64 @@
+.toolbar {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    min-width: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.toolbar.visible {
+    opacity: 1;
+}
+
+.toolbar-items {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.toolbar-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(230, 222, 222);
+    color: rgb(24, 8, 8);
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.toolbar-item input[type="checkbox"] {
+    accent-color: #00bfff;
+}
+
+.remove-btn {
+    background: #ff4d4f;
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 0 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.remove-btn:hover {
+    background: #ff7875;
+}
+
+.upload-container input[type="file"] {
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 4px 8px;
+    background: rgba(230, 222, 222);
+    color: rgb(24, 8, 8);
+}

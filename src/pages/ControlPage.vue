@@ -46,4 +46,4 @@ onUnmounted(() => {
 </template>
 
 <style lang="css" scoped src="@/assets/css/controlPage.css"></style>
-
+<style lang="css" scoped src="@/assets/css/toolbar.css"></style>

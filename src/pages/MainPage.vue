@@ -117,3 +117,4 @@ onMounted(() => {
 </template>
 
 <style scoped src="@/assets/css/mainPage.css"></style>
+<style lang="css" scoped src="@/assets/css/toolbar.css"></style>
