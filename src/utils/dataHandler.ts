@@ -24,7 +24,7 @@ const generateExampleData = (count = 100, interval = 1000) => {
  * @param {number} n
  * @returns {Array<{x: number, y: number}>}
  */
-const densifyData = (data: ChartCoordiate[], n = 50) => {
+const densifyData = (data: ChartCoordiate[], n = 20) => {
     const result = [];
 
     for (let i = 0; i < data.length - 1; i++) {
@@ -76,4 +76,43 @@ function hhmmToTimestamp(timeStr: string, baseDate = new Date()) {
     return d.getTime();
 }
 
-export { generateExampleData, hhmmToTimestamp, densifyData };
+
+function groupPointsByHour(points: ChartCoordiate[], minPoints: number = 5) {
+    const sorted = [...points].sort((a, b) => a.x - b.x)
+
+    const groups: {
+        hourStart: number
+        points: ChartCoordiate[]
+    }[] = []
+
+    let currentHourStart: number | null = null
+    let currentPoints: ChartCoordiate[] = []
+
+    for (const p of sorted) {
+        const hourStart = Math.floor(p.x / (1000 * 60 * 60)) * (1000 * 60 * 60)
+
+        if (currentHourStart === null || hourStart !== currentHourStart) {
+            if (currentPoints.length > minPoints && currentHourStart !== null) {
+                groups.push({
+                    hourStart: currentHourStart,
+                    points: currentPoints,
+                })
+            }
+            currentHourStart = hourStart
+            currentPoints = [p]
+        } else {
+            currentPoints.push(p)
+        }
+    }
+
+    if (currentPoints.length > minPoints && currentHourStart !== null) {
+        groups.push({
+            hourStart: currentHourStart,
+            points: currentPoints,
+        })
+    }
+
+    return groups
+}
+
+export { generateExampleData, hhmmToTimestamp, groupPointsByHour, densifyData };

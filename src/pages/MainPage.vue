@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import LineChart from '@/components/LineChart.vue';
 import DraggableImage from '@/components/DraggableImage.vue'
 import Picture1 from "@/assets/image/img1.png";
@@ -7,8 +7,10 @@ import Picture2 from "@/assets/image/img2.png";
 import { loadData } from "@/api/data";
 import { title, lineChartInfo } from '@/data/mainPage';
 import { currentTime, updateTime, clearTime, timerId } from '@/utils/time';
+import { groupPointsByHour } from '@/utils/dataHandler';
 import { draggableImage, showToolbar, onMouseMove, onToolbarEnter, onToolbarLeave, handleUpload, removeImage } from '@/utils/draggableImage';
 import ResizeAbleLayout from '@/components/ResizeAbleLayout.vue';
+import BasicElement from '@/components/BasicElement.vue';
 
 const appEnv = import.meta.env.VITE_APP_ENV || 'dev';
 const showBoardBased = {
@@ -17,6 +19,13 @@ const showBoardBased = {
   rightTop2: false,
   rightBottom: true
 }
+
+const grouped = ref <{
+  hourStart: number;
+  points: ChartCoordiate[];
+}[]>([]);
+const displayIdx = ref(0);
+const displayData = ref<ChartCoordiate[]>([]);
 const data = ref<ChartCoordiate[]>([]);
 const basicInfo = ref<BasicInfo>({
   courseName: '',
@@ -24,24 +33,37 @@ const basicInfo = ref<BasicInfo>({
   instructor: ''
 });
 
+let chartTimerId: number | null = null
+const updateDisplay = () => {
+  if (!grouped.value.length) return
+  if (grouped.value.length === 1) {
+    displayIdx.value = 0
+  } else {
+    displayIdx.value = (displayIdx.value + 1) % grouped.value.length
+  }
+  displayData.value = grouped.value[displayIdx.value].points
+}
+
 onMounted(() => {
   window.addEventListener('mousemove', onMouseMove);
   loadData().then((result) => {
     data.value = result.chartData;
     basicInfo.value = result.basicInfo;
+    grouped.value = groupPointsByHour(data.value);
+    displayIdx.value = 0;
+    displayData.value = grouped.value[0]?.points ?? [];
+    chartTimerId = window.setInterval(updateDisplay, 10000);
   })
 })
 
 onUnmounted(() => {
-  window.removeEventListener('mousemove', onMouseMove)
+  window.removeEventListener('mousemove', onMouseMove);
+  if (chartTimerId) clearInterval(chartTimerId);
+  if (timerId) clearTime();
 })
 
 onMounted(() => {
   updateTime()
-})
-
-onBeforeUnmount(() => {
-  if (timerId) clearTime();
 })
 </script>
 
@@ -63,11 +85,7 @@ onBeforeUnmount(() => {
     <DraggableImage v-for="(item, index) in draggableImage" :key="index" :title="item.name" v-show="item.showImage"
       :src="item.image" :initial-x="100" :initial-y="100" :initial-scale="1" :initial-rotation="0" :min-scale="0.1"
       :max-scale="3" />
-    <div class="right-element"></div>
-    <div class="left-bottom-element">
-      <h1 id="title">{{ title }}</h1>
-    </div>
-    <div class="bottom-element"></div>
+    <BasicElement />
     <ResizeAbleLayout :show-divider="false" :show-board-based="showBoardBased">
       <template #left>
         <div class="slider-container">
@@ -92,10 +110,10 @@ onBeforeUnmount(() => {
         </div>
       </template>
       <template #bottom>
-        <LineChart :data="data" :info="lineChartInfo" />
+        <LineChart :data="displayData" :info="lineChartInfo" />
       </template>
     </ResizeAbleLayout>
   </div>
 </template>
 
-<style scoped src="@/mainPage.css"></style>
+<style scoped src="@/assets/css/mainPage.css"></style>

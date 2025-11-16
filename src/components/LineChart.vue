@@ -16,13 +16,14 @@ import {
   Tooltip,
   Legend,
   Filler,
+  layouts,
 } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import 'chartjs-adapter-date-fns'
 import { generateExampleData, hhmmToTimestamp, densifyData } from '@/utils/dataHandler'
 
 const chartKey = ref(0);
-const totalDuration = 10000;
+const totalDuration = 5000;
 const delayBetweenPoints = ref(0);
 const xMaxTicks = ref(10);
 const defaultData = ref([]);
@@ -96,6 +97,12 @@ const chartOptions = computed(() => ({
       }
     }
   },
+  layout: {
+    padding: {
+      left: 40,
+      right: 40
+    }
+  },
   plugins: {
     legend: { display: true, position: 'top' },
     title: { display: true, text: props.info.title || '折線圖進度動畫' },
@@ -156,7 +163,7 @@ const chartOptions = computed(() => ({
         displayFormats: {  minute: 'HH:mm', hour: 'HH:mm' }
       },
       ticks: { autoSkip: true, maxTicksLimit: xMaxTicks.value },
-      title: { display: true, text: '時間 (HH:mm)' }
+      title: { display: true, text: '時間 (HH:mm)' },
     },
     y: {
       min: -10,
@@ -218,6 +225,8 @@ watch(
         }
       }
 
+      if (pairs.length === 0) return [];
+
       const merged = [pairs[0]];
       for (let i = 1; i < pairs.length; i++) {
         const prev = merged[merged.length - 1];
@@ -249,16 +258,9 @@ watch(
     }
     chartKey.value++;
   },
-  { immediate: true, deep: true }
+  { immediate: true }
 )
 
 ChartJS.register(LineElement, PointElement, LinearScale, TimeScale, CategoryScale, Title, Tooltip, Legend, Filler, ChartDataLabels)
 
 </script>
-
-<style scoped>
-.chart-container {
-  height: 400px;
-  position: relative;
-}
-</style>

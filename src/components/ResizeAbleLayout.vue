@@ -154,4 +154,4 @@ onBeforeUnmount(() => {
     </div>
 </template>
 
-<style lang="css" scoped src="@/layout.css"></style>
+<style lang="css" scoped src="@/assets/css/layout.css"></style>
