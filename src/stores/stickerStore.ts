@@ -17,7 +17,7 @@ interface StickerState {
 
 export const defaultDraggableImageTransform = {
     x: 100,
-    y: 100,
+    y: 500,
     scale: 1,
     rotation: 0,
     showImage: true
