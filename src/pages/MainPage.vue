@@ -1,18 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import LineChart from '@/components/LineChart.vue';
 import DraggableImage from '@/components/DraggableImage.vue'
 import Picture1 from "@/assets/image/img1.png";
 import Picture2 from "@/assets/image/img2.png";
 import { loadData } from "@/api/data";
 import { lineChartInfo } from '@/data/mainPage';
-import { currentTime, updateTime, clearTime, timerId } from '@/utils/time';
 import { groupPointsByHour } from '@/utils/dataHandler';
-import { draggableImage, showToolbar, onMouseMove, onToolbarEnter, onToolbarLeave, handleUpload, removeImage } from '@/utils/draggableImage';
+import {
+  showToolbar,
+  onMouseMove,
+  onToolbarEnter,
+  onToolbarLeave,
+} from '@/utils/draggableImage';
 import ResizeAbleLayout from '@/components/ResizeAbleLayout.vue';
 import BasicElement from '@/components/BasicElement.vue';
+import { currentTime, updateTime, clearTime, timerId } from '@/utils/time';
+import { useStickerStore } from '@/stores/stickerStore';
 
 const appEnv = import.meta.env.VITE_APP_ENV || 'dev';
+const stickerStore = useStickerStore()
+const draggableImage = computed(() => stickerStore.draggableImage);
 const showBoardBased = {
   left: true,
   rightTop1: false,
@@ -45,6 +53,7 @@ const updateDisplay = () => {
 }
 
 onMounted(() => {
+  updateTime()
   window.addEventListener('mousemove', onMouseMove);
   loadData().then((result) => {
     data.value = result.chartData;
@@ -61,30 +70,18 @@ onUnmounted(() => {
   if (chartTimerId) clearInterval(chartTimerId);
   if (timerId) clearTime();
 })
-
-onMounted(() => {
-  updateTime()
-})
 </script>
 
 <template>
   <div class="page">
-    <div v-if="appEnv !== 'dev'" class="toolbar" :class="{ visible: showToolbar }" @mouseenter="onToolbarEnter"
-      @mouseleave="onToolbarLeave">
-      <div class="toolbar-items">
-        <label v-for="(item, index) in draggableImage" :key="index" class="toolbar-item">
-          <input type="checkbox" v-model="item.showImage" />
-          <span>{{ item.name }} 圖片</span>
-          <button class="remove-btn" @click="removeImage(index)">x</button>
-        </label>
-      </div>
-      <div class="upload-container">
-        <input type="file" multiple accept="image/*" @change="handleUpload" />
-      </div>
+    <div class="toolbar" :class="{ visible: showToolbar }" @mouseenter="onToolbarEnter" @mouseleave="onToolbarLeave">
+      <RouterLink to="/control">
+        調整畫面
+      </RouterLink>
     </div>
-    <DraggableImage v-for="(item, index) in draggableImage" :key="index" :title="item.name" v-show="item.showImage"
-      :src="item.image" :initial-x="100" :initial-y="100" :initial-scale="1" :initial-rotation="0" :min-scale="0.1"
-      :max-scale="3" />
+    <DraggableImage v-for="(item, index) in draggableImage" :key="index" :title="item.name"
+      v-show="item.showImage" :src="item.image" :initial-x="item.x" :initial-y="item.y" :initial-scale="item.scale"
+      :initial-rotation="item.rotation" :min-scale="0.1" :max-scale="3" :lock="true" />
     <BasicElement />
     <ResizeAbleLayout :show-divider="false" :show-board-based="showBoardBased">
       <template #left>

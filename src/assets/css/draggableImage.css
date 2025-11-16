@@ -1,0 +1,132 @@
+.draggable-image img {
+    pointer-events: none;
+}
+
+.draggable-image,
+.static-image {
+    position: absolute;
+    cursor: move;
+    user-select: none;
+    transform-origin: center;
+    transition: box-shadow 0.2s ease;
+    z-index: 10;
+    overflow: visible;
+}
+
+.static-image{
+    cursor: auto;
+}
+
+.draggable-image:hover {
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}
+
+.draggable-image.dragging {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.8);
+    z-index: 10;
+}
+
+.draggable-image.resizing {
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.8);
+}
+
+.draggable-image.rotating {
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.8);
+}
+
+.draggable-image img,
+.static-image img {
+    max-width: 200px;
+    max-height: 200px;
+    display: block;
+    border-radius: 8px;
+}
+
+.draggable-image:hover img {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.controls {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    display: flex;
+    gap: 5px;
+    overflow: visible;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.draggable-image:hover .controls {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.control-handle {
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: #007bff;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.control-handle:hover {
+    background: #007bff;
+    color: white;
+    transform: scale(1.1);
+}
+
+.scale-handle:hover {
+    background: #ffc107;
+    border-color: #ffc107;
+}
+
+.rotate-handle:hover {
+    background: #dc3545;
+    border-color: #dc3545;
+}
+
+.status-info {
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.draggable-image:hover .status-info {
+    opacity: 1;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .draggable-image {
+        touch-action: none;
+    }
+
+    .control-handle {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .controls {
+        top: -20px;
+        right: -20px;
+    }
+}

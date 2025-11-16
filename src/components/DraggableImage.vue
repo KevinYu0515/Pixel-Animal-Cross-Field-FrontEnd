@@ -1,23 +1,32 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useStickerStore } from '@/stores/stickerStore';
+
+const stickerStore = useStickerStore();
 
 interface Props {
+  lock?: boolean
   src: string
+  title?: string
   initialX?: number
   initialY?: number
   initialScale?: number
   initialRotation?: number
   minScale?: number
   maxScale?: number
+  show?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  lock: false,
+  title: "",
   initialX: 100,
   initialY: 100,
   initialScale: 1,
   initialRotation: 0,
   minScale: 0.1,
-  maxScale: 3
+  maxScale: 3,
+  show: true
 })
 
 // 狀態管理
@@ -26,6 +35,7 @@ const isDragging = ref(false)
 const isResizing = ref(false)
 const isRotating = ref(false)
 
+const show = ref(props.show);
 const position = ref({ x: props.initialX, y: props.initialY })
 const scale = ref(props.initialScale)
 const rotation = ref(props.initialRotation)
@@ -46,6 +56,7 @@ let rotationStartAngle = 0
 const transformStyle = ref('')
 const updateTransform = () => {
   transformStyle.value = `translate(${position.value.x}px, ${position.value.y}px) scale(${scale.value}) rotate(${rotation.value}deg)`
+  saveToStore();
 }
 
 // 拖拽功能
@@ -135,6 +146,7 @@ const startRotate = (e: MouseEvent) => {
   document.addEventListener('mouseup', stopRotate)
   e.preventDefault()
   e.stopPropagation()
+  saveToStore();
 }
 
 const onRotate = (e: MouseEvent) => {
@@ -173,9 +185,20 @@ const onWheel = (e: WheelEvent) => {
   updateTransform()
 }
 
+const saveToStore = () => {
+  if (props.lock) return;
+  stickerStore.setSticker(props.title, {
+    x: position.value.x,
+    y: position.value.y,
+    scale: scale.value,
+    rotation: rotation.value,
+    showImage: show.value
+  })
+}
+
 // 生命週期
 onMounted(() => {
-  updateTransform()
+  updateTransform();
 })
 
 onUnmounted(() => {
@@ -189,161 +212,41 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="imageRef" class="draggable-image" :class="{ 
-        dragging: isDragging, 
-        resizing: isResizing, 
-        rotating: isRotating 
-      }" :style="{ transform: transformStyle }" @mousedown="startDrag" @dblclick="resetTransform" @wheel="onWheel">
-    <!-- 圖片 -->
-    <img :src="props.src" alt="Draggable Image" draggable="false">
+  <template v-if="lock">
+    <div class="static-image" :style="{ transform: transformStyle }">
+      <img :src="props.src" alt="Draggable Image" draggable="false">
+    </div>
+  </template>
+  <template v-else>
+    <div ref="imageRef" class="draggable-image" :class="{
+      dragging: isDragging,
+      resizing: isResizing,
+      rotating: isRotating
+    }" :style="{ transform: transformStyle }" @mousedown="startDrag" @dblclick="resetTransform" @wheel="onWheel">
+      <!-- 圖片 -->
+      <img :src="props.src" alt="Draggable Image" draggable="false">
 
-    <!-- 控制手柄 -->
-    <div class="controls">
-      <!-- 縮放手柄 -->
-      <div class="control-handle scale-handle" @mousedown="startScale" title="拖拽縮放">
-        <img src="@/assets/image/scale.png" alt="縮放" />
+      <!-- 控制手柄 -->
+      <div class="controls">
+        <!-- 縮放手柄 -->
+        <div class="control-handle scale-handle" @mousedown="startScale" title="拖拽縮放">
+          <img src="@/assets/image/scale.png" alt="縮放" />
+        </div>
+
+        <!-- 旋轉手柄 -->
+        <div class="control-handle rotate-handle" @mousedown="startRotate" title="拖拽旋轉">
+          <img src="@/assets/image/rotate.png" alt="旋轉" />
+        </div>
       </div>
 
-      <!-- 旋轉手柄 -->
-      <div class="control-handle rotate-handle" @mousedown="startRotate" title="拖拽旋轉">
-        <img src="@/assets/image/rotate.png" alt="旋轉" />
+      <!-- 狀態顯示 -->
+      <div class="status-info">
+        <div>縮放: {{ scale.toFixed(2) }}</div>
+        <div>旋轉: {{ Math.round(rotation) }}°</div>
       </div>
     </div>
+  </template>
 
-    <!-- 狀態顯示 -->
-    <div class="status-info">
-      <div>縮放: {{ scale.toFixed(2) }}</div>
-      <div>旋轉: {{ Math.round(rotation) }}°</div>
-    </div>
-  </div>
 </template>
 
-<style scoped>
-
-.draggable-image img {
-  pointer-events: none;
-}
-
-.draggable-image {
-  position: absolute;
-  cursor: move;
-  user-select: none;
-  transform-origin: center;
-  transition: box-shadow 0.2s ease;
-  z-index: 999;
-  overflow: visible;
-}
-
-.draggable-image:hover {
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
-}
-
-.draggable-image.dragging {
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.8);
-  z-index: 1000;
-}
-
-.draggable-image.resizing {
-  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.8);
-}
-
-.draggable-image.rotating {
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.8);
-}
-
-.draggable-image img {
-  max-width: 200px;
-  max-height: 200px;
-  display: block;
-  border-radius: 8px;
-}
-
-.draggable-image:hover img {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.controls {
-  position: absolute;
-  top: -15px;
-  right: -15px;
-  display: flex;
-  gap: 5px;
-  overflow: visible;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.draggable-image:hover .controls {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.control-handle {
-  width: 30px;
-  height: 30px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid #007bff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  color: #007bff;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-
-.control-handle:hover {
-  background: #007bff;
-  color: white;
-  transform: scale(1.1);
-}
-
-.scale-handle:hover {
-  background: #ffc107;
-  border-color: #ffc107;
-}
-
-.rotate-handle:hover {
-  background: #dc3545;
-  border-color: #dc3545;
-}
-
-.status-info {
-  position: absolute;
-  bottom: -40px;
-  left: 0;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.draggable-image:hover .status-info {
-  opacity: 1;
-}
-
-/* 響應式設計 */
-@media (max-width: 768px) {
-  .draggable-image {
-    touch-action: none;
-  }
-  
-  .control-handle {
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
-  }
-  
-  .controls {
-    top: -20px;
-    right: -20px;
-  }
-}
-</style>
+<style scoped src="@/assets/css/draggableImage.css"></style>

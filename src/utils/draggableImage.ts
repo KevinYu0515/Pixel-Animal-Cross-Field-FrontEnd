@@ -1,11 +1,12 @@
 import { ref, reactive } from 'vue'
 import Animal1 from '@/assets/image/bird1.png'
 import Animal2 from '@/assets/image/bird2.png'
+import Element1 from '@/assets/image/board2.png'
+import Element2 from '@/assets/image/cloud.png'
 
 interface DraggableItem {
     image: string
     name: string
-    showImage: boolean
 }
 
 function getFileName(path: string) {
@@ -16,17 +17,22 @@ function getFileName(path: string) {
 
 const showToolbar = ref(false);
 
-const draggableImage = reactive<DraggableItem[]>([{
+let mouseNearTop = false
+let mouseInToolbar = false
+
+const baseDraggableImage = reactive<DraggableItem[]>([{
     image: Animal1,
     name: getFileName(Animal1),
-    showImage: true
 }, {
     image: Animal2,
     name: getFileName(Animal2),
-    showImage: true
-}])
-let mouseNearTop = false
-let mouseInToolbar = false
+}, {
+    image: Element1,
+    name: getFileName(Element1),
+}, {
+    image: Element2,
+    name: getFileName(Element2),
+}]);
 
 const onMouseMove = (e: MouseEvent) => {
     mouseNearTop = e.clientY < 50;
@@ -54,10 +60,9 @@ const handleUpload = (e: Event) => {
     Array.from(target.files).forEach(file => {
         const reader = new FileReader()
         reader.onload = (event) => {
-            draggableImage.push({
+            baseDraggableImage.push({
                 image: event.target?.result as string,
-                name: file.name,
-                showImage: true
+                name: file.name
             })
         }
         reader.readAsDataURL(file)
@@ -66,7 +71,7 @@ const handleUpload = (e: Event) => {
 }
 
 const removeImage = (index: number) => {
-    draggableImage.splice(index, 1)
+    baseDraggableImage.splice(index, 1)
 }
 
-export { draggableImage, showToolbar, onMouseMove, onToolbarEnter, onToolbarLeave, handleUpload, removeImage };
+export { baseDraggableImage, showToolbar, onMouseMove, onToolbarEnter, onToolbarLeave, handleUpload, removeImage };

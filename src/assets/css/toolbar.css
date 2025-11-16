@@ -62,3 +62,32 @@
     background: rgba(230, 222, 222);
     color: rgb(24, 8, 8);
 }
+
+/* 裡面的文字 / 按鈕 */
+.toolbar a {
+    font-size: 0.9rem;
+    color: #0f172a;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(241, 245, 249, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    cursor: pointer;
+    user-select: none;
+
+    transition:
+        background 0.15s ease,
+        transform 0.1s ease,
+        box-shadow 0.15s ease;
+}
+
+.toolbar a:hover {
+    background: #e0f2fe;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.18);
+    transform: translateY(-1px);
+}
+
+.toolbar a:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(15, 23, 42, 0.25);
+}

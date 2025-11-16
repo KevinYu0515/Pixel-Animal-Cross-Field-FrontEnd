@@ -19,3 +19,17 @@
   box-sizing: border-box;
   overflow: hidden;
 }
+
+.list-box {
+  font-size: 1.3rem;
+  font-weight: bolder;
+  color: black;
+  z-index: 20;
+}
+
+.time-box {
+  font-size: 5rem;
+  font-weight: bolder;
+  color: black;
+  z-index: 20;
+}

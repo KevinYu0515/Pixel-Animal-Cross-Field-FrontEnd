@@ -8,8 +8,8 @@ const { leftWidth, leftSectionHeight, topHeight } = storeToRefs(layoutStore)
 
 const STORAGE_KEY = 'layout-store-v1';
 
-const MIN_LEFT_WIDTH = 200
-const MAX_LEFT_WIDTH = 800
+const MIN_LEFT_WIDTH = 400
+const MAX_LEFT_WIDTH = 1000
 
 const MIN_LEFT_SECTION = 120
 const MAX_LEFT_SECTION = 600
@@ -120,7 +120,7 @@ onBeforeUnmount(() => {
             <div class="section" :class="{ 'container-bg': showBoardBased.left }"
                 :style="{ height: leftSectionHeight + 'px' }">
                 <slot name="left">
-                    左側內容
+                    左側區塊
                 </slot>
             </div>
 
@@ -131,14 +131,12 @@ onBeforeUnmount(() => {
 
         <div class="right-container">
             <div class="top-group" :style="{ height: topHeight + 'px' }">
-                <div class="top-section-1" :class="{ 'container-bg': showBoardBased.rightTop1 }">
+                <div class="top-section-1">
                     <slot name="top1">
-                        上區塊 1
                     </slot>
                 </div>
-                <div class="top-section-2" :class="{ 'container-bg': showBoardBased.rightTop2 }">
+                <div class="top-section-2">
                     <slot name="top2">
-                        上區塊 2
                     </slot>
                 </div>
             </div>
@@ -147,7 +145,7 @@ onBeforeUnmount(() => {
 
             <div class="bottom-section" :class="{ 'container-bg': showBoardBased.rightBottom }">
                 <slot name="bottom">
-                    下區塊
+                    右側下區塊
                 </slot>
             </div>
         </div>

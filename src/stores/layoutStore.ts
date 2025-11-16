@@ -21,7 +21,7 @@ export const useLayoutStore = defineStore('layout', {
                         topHeight: parsed.topHeight ?? 300,
                     }
                 } catch {
-                    // localStorage 裡是壞掉的資料就忽略，走預設值
+                    // localStorage error
                 }
             }
         }
