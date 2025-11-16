@@ -5,7 +5,7 @@ import DraggableImage from '@/components/DraggableImage.vue'
 import Picture1 from "@/assets/image/img1.png";
 import Picture2 from "@/assets/image/img2.png";
 import { loadData } from "@/api/data";
-import { title, lineChartInfo } from '@/data/mainPage';
+import { lineChartInfo } from '@/data/mainPage';
 import { currentTime, updateTime, clearTime, timerId } from '@/utils/time';
 import { groupPointsByHour } from '@/utils/dataHandler';
 import { draggableImage, showToolbar, onMouseMove, onToolbarEnter, onToolbarLeave, handleUpload, removeImage } from '@/utils/draggableImage';
