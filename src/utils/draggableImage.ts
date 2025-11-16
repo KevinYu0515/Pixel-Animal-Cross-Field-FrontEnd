@@ -1,7 +1,7 @@
 import { ref, reactive } from 'vue'
 import Animal1 from '@/assets/image/bird1.png'
 import Animal2 from '@/assets/image/bird2.png'
-import Element1 from '@/assets/image/board2.png'
+// import Element1 from '@/assets/image/board2.png'
 import Element2 from '@/assets/image/cloud.png'
 
 interface DraggableItem {
@@ -26,9 +26,6 @@ const baseDraggableImage = reactive<DraggableItem[]>([{
 }, {
     image: Animal2,
     name: getFileName(Animal2),
-}, {
-    image: Element1,
-    name: getFileName(Element1),
 }, {
     image: Element2,
     name: getFileName(Element2),

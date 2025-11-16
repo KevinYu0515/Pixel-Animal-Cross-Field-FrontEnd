@@ -53,7 +53,7 @@ onUnmounted(() => {
         <ResizeAbleLayout>
             <template #top1>
                 <div class="time-box">
-                    <p>12:00</p>
+                    <p class="pixel-text">12:00</p>
                 </div>
             </template>
             <template #top2>

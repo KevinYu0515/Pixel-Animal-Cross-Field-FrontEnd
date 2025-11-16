@@ -44,15 +44,11 @@
 }
 
 .left-bottom-element h1 {
+    letter-spacing: 15px;
     padding-left: 2rem;
     z-index: 2;
     text-align: left;
     font-size: 5rem;
     font-weight: bolder;
     color: black;
-    text-shadow:
-        2px 2px 0px white,
-        -2px 2px 0px white,
-        2px -2px 0px white,
-        -2px -2px 0px white;
 }

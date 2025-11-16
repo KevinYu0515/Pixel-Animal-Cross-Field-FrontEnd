@@ -5,7 +5,7 @@ import { title } from '@/data/mainPage';
 <template>
     <div class="right-element"></div>
     <div class="left-bottom-element">
-        <h1 id="title">{{ title }}</h1>
+        <h1 id="title" class="pixel-text">{{ title }}</h1>
     </div>
     <div class="bottom-element"></div>
 </template>

@@ -79,8 +79,8 @@ onUnmounted(() => {
         調整畫面
       </RouterLink>
     </div>
-    <DraggableImage v-for="(item, index) in draggableImage" :key="index" :title="item.name"
-      v-show="item.showImage" :src="item.image" :initial-x="item.x" :initial-y="item.y" :initial-scale="item.scale"
+    <DraggableImage v-for="(item, index) in draggableImage" :key="index" :title="item.name" v-show="item.showImage"
+      :src="item.image" :initial-x="item.x" :initial-y="item.y" :initial-scale="item.scale"
       :initial-rotation="item.rotation" :min-scale="0.1" :max-scale="3" :lock="true" />
     <BasicElement />
     <ResizeAbleLayout :show-divider="false" :show-board-based="showBoardBased">
@@ -94,7 +94,7 @@ onUnmounted(() => {
       </template>
       <template #top1>
         <div class="time-box">
-          <p>{{ currentTime }}</p>
+          <p class="pixel-text">{{ currentTime }}</p>
         </div>
       </template>
       <template #top2>
